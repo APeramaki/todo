@@ -40,17 +40,15 @@ app.post("/create", (req, res) => {
   }
 
   pool.query(
-    "INSERT INTO tasks (task) VALUES ($1) RETURNING *",
+    "INSERT INTO tasks (description) VALUES ($1) RETURNING *",
     [task.description],
     (err, result) => {
-      (err, result) => {
-        if (err) {
-          return res.status(500).json({ error: err.message });
-        }
-        res
-          .status(201)
-          .json({ id: result.rows[0].id, description: task.description });
-      };
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res
+        .status(201)
+        .json({ id: result.rows[0].id, description: task.description });
     }
   );
 });

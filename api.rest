@@ -1,0 +1,18 @@
+# get all tasks
+GET http://localhost:3001/
+
+###
+# create new task
+POST http://localhost:3001/create HTTP/1.1
+content-type: application/json
+
+{
+    "task":{"description": "Uusi tehtava"}
+}
+
+
+
+### delete task
+# Delete task with id 
+# @prompt toDeleteTaskId
+DELETE http://localhost:3001/delete/{{toDeleteTaskId}} HTTP/1.1 
