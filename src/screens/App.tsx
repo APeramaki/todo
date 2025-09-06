@@ -1,8 +1,9 @@
-import "./App.css";
+import "../App.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import type { Task } from "./types/Task";
-import { Row } from "./components/Row";
+import { useUser } from "../context/useUser";
+import type { Task } from "../types/Task";
+import { Row } from "../components/Row";
 
 const url = "http://localhost:3001";
 
@@ -13,6 +14,7 @@ type Response = {
 function App() {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
+  const { user } = useUser();
 
   useEffect(() => {
     axios
@@ -24,9 +26,10 @@ function App() {
   }, []);
 
   const addTask = () => {
+    const headers = { headers: { Authorization: `${user?.token}` } };
     const newTask = { description: task };
     axios
-      .post(url + "/create", { task: newTask })
+      .post(url + "/create", { task: newTask }, headers)
       .then((res: { data: Task }) => {
         setTasks([...tasks, res.data]);
         setTask("");
@@ -37,8 +40,9 @@ function App() {
   };
 
   const deleteTask = (deletedTask: number) => {
+    const headers = { headers: { Authorization: `${user?.token}` } };
     axios
-      .delete(url + `/delete/${deletedTask}`)
+      .delete(url + `/delete/${deletedTask}`, headers)
       .then(() => {
         setTasks(tasks.filter((task) => task.id !== deletedTask));
       })

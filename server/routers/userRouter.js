@@ -1,6 +1,6 @@
 import { pool } from "../helper/db.js";
 import { Router } from "express";
-import { hash } from "bcrypt";
+import { hash, compare } from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const { sign } = jwt;
@@ -13,7 +13,6 @@ userRouter.post("/signup", (req, res, next) => {
 
     return next(error);
   }
-  console.log(`Signing up user with email: ${user.email}`);
 
   hash(user.password, 10, (err, hashedPassword) => {
     if (err) return next(err);
@@ -36,17 +35,25 @@ userRouter.post("/signup", (req, res, next) => {
 export default userRouter;
 
 userRouter.post("/signin", (req, res, next) => {
+  console.log("Signin request received");
+
   const { user } = req.body;
   if (!user || !user.email || !user.password) {
     const error = new Error("Email and password are required");
     error.status = 400;
     return next(error);
   }
+  console.log("Looking up user:", user.email);
+
   pool.query(
-    "SELECT * FROM account WHERE email = $1",
+    "SELECT * FROM accounts WHERE email = $1",
     [user.email],
     (err, result) => {
-      if (err) return next(err);
+      if (err) {
+        console.log(err.message);
+
+        return next(err);
+      }
       if (result.rows.length === 0) {
         const error = new Error("User not found");
         error.status = 404;
@@ -61,6 +68,8 @@ userRouter.post("/signin", (req, res, next) => {
           return next(error);
         }
       });
+      console.log("User authenticated:", dbUser.email);
+
       const token = sign({ user: dbUser.email }, process.env.JWT_SECRET);
       res.status(200).json({
         id: dbUser.id,
