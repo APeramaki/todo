@@ -1,6 +1,17 @@
 import { expect } from "chai";
+import { initializeTestDb, getToken } from "./test.js";
 
 describe("Testing basic database functionality", () => {
+  let token = null;
+  const testUser = {
+    email: "foo@foo.com",
+    password: "password123",
+  };
+  before(() => {
+    initializeTestDb();
+    token = getToken(testUser);
+  });
+
   it("should get all tasks", async () => {
     const response = await fetch("http://localhost:3001/");
     const data = await response.json();
@@ -13,7 +24,7 @@ describe("Testing basic database functionality", () => {
     const newTask = { description: "Test task" };
     const response = await fetch("http://localhost:3001/create", {
       method: "post",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Authorization: token },
       body: JSON.stringify({ task: newTask }),
     });
     const data = await response.json();
@@ -24,6 +35,7 @@ describe("Testing basic database functionality", () => {
 
   it("should delete task", async () => {
     const response = await fetch("http://localhost:3001/delete/1", {
+      headers: { Authorization: token },
       method: "delete",
     });
     const data = await response.json();
@@ -34,7 +46,7 @@ describe("Testing basic database functionality", () => {
   it("should not create a new task without description", async () => {
     const response = await fetch("http://localhost:3001/create", {
       method: "post",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Authorization: token },
       body: JSON.stringify({ task: null }),
     });
     const data = await response.json();

@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS tasks;
+DROP TABLE IF EXISTS accounts;
+
 CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
     description VARCHAR(255) NOT NULL
@@ -12,3 +15,10 @@ INSERT INTO tasks (description) VALUES
 ('Fix the reported bugs'),
 ('Deploy the application to production'),
 ('Conduct a code review with peers');
+
+
+create table accounts (
+id serial primary key,
+email varchar(50) not null unique,
+password varchar(255) not null
+);

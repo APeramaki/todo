@@ -1,6 +1,6 @@
 import { pool } from "../helper/db.js";
 import { Router } from "express";
-
+import { auth } from "../helper/auth.js";
 const todoRouter = Router();
 
 todoRouter.get("/", (req, res, next) => {
@@ -12,7 +12,7 @@ todoRouter.get("/", (req, res, next) => {
   });
 });
 
-todoRouter.post("/create", (req, res) => {
+todoRouter.post("/create", auth, (req, res, next) => {
   const { task } = req.body;
 
   if (!task) {
@@ -33,7 +33,7 @@ todoRouter.post("/create", (req, res) => {
   );
 });
 
-todoRouter.delete("/delete/:id", (req, res) => {
+todoRouter.delete("/delete/:id", auth, (req, res, next) => {
   const { id } = req.params;
 
   console.log(`Deleting task with id: ${id}`);

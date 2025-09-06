@@ -19,6 +19,10 @@ const openDb = () => {
     password: process.env.DB_PASSWORD || "password",
     port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
   });
+  console.log(
+    `Connected to database: ${pool.options.database} on port ${pool.options.port}`
+  );
+
   return pool;
 };
 
