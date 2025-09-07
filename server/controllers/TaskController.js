@@ -1,4 +1,6 @@
 import { selectAllTasks, insertTask, deleteTaskById } from "../models/Task.js";
+import { ApiError } from "../helper/ApiError.js";
+
 const getTasks = async (req, res, next) => {
   try {
     const result = await selectAllTasks();
@@ -13,7 +15,6 @@ const postTask = async (req, res, next) => {
   try {
     if (!task || !task.description || task.description.trim().length === 0) {
       const error = new ApiError("Task description is required", 400);
-      error.status = 400;
       return next(error);
     }
     const result = await insertTask(task.description);
@@ -21,7 +22,7 @@ const postTask = async (req, res, next) => {
       .status(201)
       .json({ id: result.rows[0].id, description: result.rows[0].description });
   } catch (error) {
-    return next(error);
+    return next(new ApiError(error.message, 500));
   }
 };
 
@@ -29,11 +30,10 @@ const deleteTask = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    console.log(`Deleting task with id: ${id}`);
     await deleteTaskById(id);
     return res.status(200).json({ id: id });
   } catch (error) {
-    return next(error);
+    return next(new ApiError(error.message, 500));
   }
 };
 export { getTasks, postTask, deleteTask };

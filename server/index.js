@@ -16,6 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/", todoRouter);
 app.use("/user", userRouter);
+app.use(express.json()); // <--- ADD THIS LINE!
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;
